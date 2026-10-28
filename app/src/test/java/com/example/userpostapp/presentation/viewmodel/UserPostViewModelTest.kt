@@ -76,7 +76,7 @@ class UserPostViewModelTest {
     @Test
     fun `test getUserPost failure`() = runTest {
         val errorMessage = "Something went wrong!"
-        val apiErrorResponse = APIResponse.ERROR<List<UserPost>>(error = errorMessage)
+        val apiErrorResponse = APIResponse.ERROR(error = errorMessage)
 
         coEvery { getUserPostUseCase() } coAnswers {
             delay(100)

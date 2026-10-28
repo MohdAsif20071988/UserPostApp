@@ -10,17 +10,21 @@ import javax.inject.Inject
 
 class UserPostRepositoryImpl @Inject constructor(val userPostAPI: UserPostAPI): UserPostRepository {
     override suspend fun getUserPost(): APIResponse<List<UserPost>> {
-        try {
+        return try {
             val response = userPostAPI.getUserPost()
-            return if(response.isSuccessful && response.body() != null) {
-                APIResponse.SUCCESS(response.body()!!.map { it.toDomain()})
+
+            if(response.isSuccessful) {
+                response.body()?.let {
+                    APIResponse.SUCCESS(it.map { userPostDTO -> userPostDTO.toDomain()})
+                } ?:  APIResponse.ERROR("Something Went wrong!")
+
             } else {
                 APIResponse.ERROR("Something Went wrong!")
             }
         } catch(cancellationException: CancellationException) {
             throw cancellationException
         } catch(exception: Exception) {
-            return APIResponse.ERROR(exception.message.toString())
+            APIResponse.ERROR(exception.message.toString())
         }
     }
 }
